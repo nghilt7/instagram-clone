@@ -4,9 +4,10 @@ import { HomeIcon } from "@heroicons/react/solid";
 
 export default function Header() {
   return (
-    <div>
-      {/* Left */}
+    <div className="shadow-sm top-0 border-b sticky bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
+        {/* Left */}
+
         <div className="cursor-pointer h-24 w-24 relative hidden lg:inline-grid">
           <Image
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/800px-Instagram_logo.svg.png?20160616034027"
