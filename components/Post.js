@@ -21,7 +21,7 @@ export default function Post({ id, username, userImg, img, caption }) {
       </div>
 
       {/* Post Image */}
-      <img className="object-cover w-full" src={img} alt="Photo" />
+      <img className="object-cover w-full h-[350px]" src={img} alt="Photo" />
 
       {/* Post Buttons */}
       <div className="flex justify-between px-4 pt-4">
