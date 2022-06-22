@@ -1,13 +1,53 @@
 import { modalState } from "../atom/modalAtom";
-import { useRecoilState } from "recoil";
+import { Snapshot, useRecoilState } from "recoil";
 import Modal from "react-modal";
 import { CameraIcon } from "@heroicons/react/outline";
 import { useRef, useState } from "react";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  updateDoc,
+  doc,
+} from "firebase/firestore";
+import { db, storage } from "../firebase";
+import { useSession } from "next-auth/react";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { async } from "@firebase/util";
 
 export default function UploadModal() {
   const [open, setOpen] = useRecoilState(modalState);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  async function uploadPost() {
+    if (loading) return;
+
+    setLoading(true);
+
+    const docRef = await addDoc(collection(db, "posts"), {
+      caption: captionRef.current.value,
+      username: session.user.username,
+      profileImg: session.user.image,
+      timestamp: serverTimestamp(),
+    });
+
+    const imageRef = ref(storage, `posts/${docRef.id}/image`);
+    await uploadString(imageRef, selectedFile, "data_url").then(
+      async (snapshot) => {
+        const downloadURL = await getDownloadURL(imageRef);
+        await updateDoc(doc(db, "posts", docRef.id), {
+          image: downloadURL,
+        });
+      }
+    );
+    setOpen(false);
+    setLoading(false);
+    setSelectedFile(null);
+  }
+
   const filePickerRef = useRef(null);
+  const captionRef = useRef(null);
 
   function addImageToPost(event) {
     const reader = new FileReader();
@@ -54,14 +94,16 @@ export default function UploadModal() {
               onChange={addImageToPost}
             />
             <input
+              ref={captionRef}
               type="text"
               maxLength={150}
               placeholder="Please enter your caption..."
               className="m-4 border-none text-center w-full focus:ring-0"
             />
             <button
-              disabled
-              className="w-full bg-red-600 p-2 text-white shadow-md hover:brightness-125 disabled:bg-gray-200 cursor-not-allowed disabled:hover:brightness-100"
+              onClick={uploadPost}
+              disabled={!selectedFile || loading}
+              className="w-full bg-red-600 p-2 text-white shadow-md hover:brightness-125 disabled:bg-gray-200 disabled:cursor-not-allowed disabled:hover:brightness-100"
             >
               Upload Post
             </button>
