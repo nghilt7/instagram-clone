@@ -4,10 +4,12 @@ import { HomeIcon } from "@heroicons/react/solid";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../atom/modalAtom";
+import { useRouter } from "next/router";
 
 export default function Header() {
   const { data: session } = useSession();
   const [open, setOpen] = useRecoilState(modalState);
+  const router = useRouter();
   return (
     <div className="shadow-sm top-0 border-b sticky bg-white z-30">
       <div className="flex items-center justify-between max-w-6xl mx-4 xl:mx-auto">
@@ -17,6 +19,7 @@ export default function Header() {
           <Image
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Instagram_logo.svg/800px-Instagram_logo.svg.png?20160616034027"
             layout="fill"
+            onClick={() => router.push("/")}
             className="object-contain"
             alt="photo"
           />
@@ -25,6 +28,7 @@ export default function Header() {
           <Image
             src="https://img.freepik.com/free-vector/instagram-icon_1057-2227.jpg"
             layout="fill"
+            onClick={() => router.push("/")}
             className="object-contain"
             alt="photo"
           />
@@ -45,7 +49,10 @@ export default function Header() {
         {/* Right */}
 
         <div className="flex items-center space-x-4">
-          <HomeIcon className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out hidden lg:inline-grid" />
+          <HomeIcon
+            onClick={() => router.push("/")}
+            className="h-6 cursor-pointer hover:scale-125 transition-transform duration-200 ease-out hidden lg:inline-grid"
+          />
           {session ? (
             <>
               {" "}
